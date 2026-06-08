@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ant Design React 原型模板</title>
+    <!-- React 18 -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel Standalone (支持 JSX) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Ant Design 4 UMD (✅ 4.x 支持 CDN) -->
+    <script crossorigin src="https://unpkg.com/antd@4/dist/antd.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/antd@4/dist/antd.min.css">
+    <style>
+        body { 
+            margin: 0; 
+            padding: 0; 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: #f0f2f5; 
+        }
+        * { box-sizing: border-box; }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+    
+    <script type="text/babel">
+        // antd 全局对象包含所有组件
+        const { 
+            Layout, Menu, Card, Button, Input, Table, Tag, 
+            message, Space, Typography, Badge, Alert, Progress, 
+            Avatar, Statistic, Row, Col, Divider, List 
+        } = antd;
+        const { Header, Content, Sider, Footer } = Layout;
+        const { Title, Text, Paragraph } = Typography;
+
+        function App() {
+            return (
+                <Layout style={{ minHeight: '100vh' }}>
+                    <Sider width={232} theme="dark">
+                        <div style={{ 
+                            height: 64, 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center', 
+                            color: '#fff', 
+                            fontSize: 18, 
+                            fontWeight: 'bold' 
+                        }}>
+                            🏥 系统名称
+                        </div>
+                        <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
+                            <Menu.Item key="1" icon={<span>📊</span>}>首页概览</Menu.Item>
+                            <Menu.Item key="2" icon={<span>📋</span>}>数据管理</Menu.Item>
+                            <Menu.Item key="3" icon={<span>⚙️</span>}>系统设置</Menu.Item>
+                        </Menu>
+                    </Sider>
+                    <Layout>
+                        <Header style={{ 
+                            background: '#fff', 
+                            padding: '0 24px', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'space-between',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                        }}>
+                            <h3 style={{ margin: 0 }}>页面标题</h3>
+                            <Space>
+                                <Badge count={3}>
+                                    <Button shape="circle" icon={<span>🔔</span>} />
+                                </Badge>
+                                <Button type="text">👤 用户名</Button>
+                            </Space>
+                        </Header>
+                        <Content style={{ margin: 24, padding: 24, background: '#fff', minHeight: 280 }}>
+                            <Title level={4}>内容区域</Title>
+                            <Card style={{ marginTop: 16 }}>
+                                <p>使用 antd@4 CDN，无需构建工具，浏览器直接打开 ✅</p>
+                                <Button type="primary" onClick={() => message.success('操作成功！')}>
+                                    按钮示例
+                                </Button>
+                            </Card>
+                        </Content>
+                    </Layout>
+                </Layout>
+            );
+        }
+        
+        ReactDOM.createRoot(document.getElementById('app')).render(<App />);
+    </script>
+</body>
+</html>
