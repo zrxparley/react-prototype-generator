@@ -1,43 +1,35 @@
 ---
 name: antd-react-prototype
-description: Generate React UI prototypes using dual architecture - Vite + TypeScript + Ant Design (国内架构) OR Vite + TypeScript + Tailwind CSS v4 + Radix UI (国际架构). Use this skill when user requests creating React prototypes/pages. Triggers include "用 React 做一个...", "生成 React 页面", "用 Ant Design 做一个...", "React 原型", "国际架构", "Tailwind".
+description: Generate React UI prototypes using dual architecture - Vite + TypeScript + Ant Design (国内架构) OR Next.js 15 (App Router) + TypeScript + Tailwind CSS v4 + shadcn/ui (国际架构). Use this skill when user requests creating React prototypes/pages. Triggers include "用 React 做一个...", "生成 React 页面", "用 Ant Design 做一个...", "React 原型", "国际架构", "Next.js", "shadcn".
 agent_created: true
 ---
 
 # React UI Prototype Generator (Dual Architecture)
 
-Generate React prototypes using **Vite + TypeScript** with choice of UI framework:
+Generate React prototypes with **two professional architectures**:
 
 1. **国内架构**: Vite + TypeScript + **Ant Design (antd)**
-2. **国际架构**: Vite + TypeScript + **Tailwind CSS v4 + Radix UI**
+2. **国际架构**: Next.js 15 (App Router) + TypeScript + **Tailwind CSS v4 + shadcn/ui**
 
 ## Architecture Selection
 
 Ask user which architecture to use:
 - **国内架构** (Ant Design): Enterprise UI, rich components, Chinese-friendly
-- **国际架构** (Tailwind + Radix UI): Modern, customizable, headless components
+- **国际架构** (Next.js + shadcn/ui): Modern full-stack, beautiful design system, international standard
 
 If user doesn't specify, **default to 国内架构 (Ant Design)**.
 
 ## Overview
 
-This skill generates complete Vite + TypeScript projects (not single HTML files) because:
+This skill generates complete projects (not single HTML files) because:
 - Ant Design **does NOT support CDN/UMD** (requires build tools)
-- Tailwind CSS v4 requires build tools (Vite plugin)
+- Next.js requires build tools (node_modules, bundler)
 - TypeScript provides type safety, better DX, and is the industry standard
-- Vite provides best DX (HMR, fast builds, TypeScript support out of the box)
-
-## When to Use This Skill
-
-Trigger this skill when the user:
-- Asks to create a React page/prototype (e.g., "用 React 做一个登录页面")
-- Wants to use Ant Design components ("用 Ant Design 做一个...")
-- Says "生成 React 原型", "React 后台管理"
-- Mentions "国际架构", "Tailwind", "Radix UI"
+- Vite (国内) / Next.js (国际) provide best DX (HMR, fast builds, TypeScript support)
 
 ---
 
-## Approach 1: 国内架构 (Ant Design)
+## Approach 1: 国内架构 (Ant Design + Vite)
 
 ### Step 1: Generate Vite Project
 
@@ -150,57 +142,64 @@ After generating the project:
 
 ---
 
-## Approach 2: 国际架构 (Tailwind CSS v4 + Radix UI)
+## Approach 2: 国际架构 (Next.js 15 + Tailwind CSS v4 + shadcn/ui)
 
-**⚠️ Important**: Use **Tailwind CSS v4** (NOT v3)
+**⚠️ Important**: Use **Next.js 15 (App Router)** + **Tailwind CSS v4** + **shadcn/ui**
 
-### Step 1: Generate Vite Project
+### Why shadcn/ui?
+
+shadcn/ui is NOT a npm package — it's a **copy-paste component collection**:
+- Built on **Radix UI** (accessible primitives) + **Tailwind CSS** (styling)
+- You own the component source code (fully customizable)
+- 40+ beautiful, accessible components out of the box
+- Recommended by **Vercel** (Next.js creators)
+- The current international standard for React UI
+
+### Step 1: Generate Next.js Project
 
 ```bash
-# 1. Create Vite project (TypeScript template)
-npm create vite@latest <project-name> -- --template react-ts
+# 1. Create Next.js project (App Router + TypeScript)
+npx create-next-app@latest <project-name> --typescript --tailwind --eslint --app --src-dir --import-alias "@/*"
 cd <project-name>
 
-# 2. Install Tailwind CSS v4 + Vite plugin
-npm install tailwindcss @tailwindcss/vite --save-dev
+# 2. Initialize shadcn/ui
+npx shadcn@latest init
 
-# 3. Install Radix UI primitives
-npm install @radix-ui/react-dialog @radix-ui/react-dropdown-menu @radix-ui/react-tabs @radix-ui/react-popover @radix-ui/react-tooltip @radix-ui/react-progress
-
-# 4. Install icons library
-npm install lucide-react
+# 3. Install commonly used shadcn components
+npx shadcn@latest add button card dialog dropdown-menu input label select table tabs badge avatar
 ```
 
-### Step 2: Configure Vite
+### Step 2: Project Structure
 
-**vite.config.ts**:
-```typescript
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
+Generate these files:
 
-export default defineConfig({
-  plugins: [react(), tailwindcss()],
-})
+```
+<project-name>/
+├── src/app/
+│   ├── layout.tsx        # Root layout (fonts, ThemeProvider)
+│   ├── page.tsx          # Home page
+│   ├── globals.css       # Tailwind + shadcn variables
+│   └── fonts/
+├── src/components/
+│   └── ui/              # shadcn/ui components (button.tsx, card.tsx, etc.)
+├── next.config.ts
+├── tailwind.config.ts     # (if using v3) or CSS @theme (if using v4)
+├── tsconfig.json
+└── package.json
 ```
 
 ### Step 3: Configure Tailwind CSS v4
 
-**src/index.css**:
+**⚠️ Tailwind v3 vs v4 — Check which version is installed!**
+
+**If Tailwind v4** (`tailwindcss` v4.x):
 ```css
+/* src/app/globals.css */
 @import "tailwindcss";
 
 @theme {
-  --color-primary-50: #eff6ff;
-  --color-primary-100: #dbeafe;
-  --color-primary-200: #bfdbfe;
-  --color-primary-300: #93c5fd;
-  --color-primary-400: #60a5fa;
   --color-primary-500: #3b82f6;
-  --color-primary-600: #2563eb;
-  --color-primary-700: #1d4ed8;
-  --color-primary-800: #1e40af;
-  --color-primary-900: #1e3a8a;
+  /* ... custom theme variables */
 }
 
 body {
@@ -209,123 +208,135 @@ body {
 }
 ```
 
-### Step 4: Import CSS in main.tsx
-
-**src/main.tsx**:
 ```typescript
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App'
-import './index.css'
+// next.config.ts — NO tailwind plugin needed in v4
+import type { NextConfig } from "next";
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-)
+const nextConfig: NextConfig = {};
+
+export default nextConfig;
 ```
 
-### Step 5: Create Components with Radix UI
+**If Tailwind v3** (`tailwindcss` v3.x):
+```javascript
+// tailwind.config.ts
+import type { Config } from "tailwindcss";
 
-**src/App.tsx**:
-```tsx
-import React, { useState, type FC } from 'react'
-import { LayoutDashboard, Users, Pill, Activity, Bell, Settings, Menu, X, ChevronDown } from 'lucide-react'
+const config: Config = {
+  content: [
+    "./src/components/**/*.{ts,tsx}",
+    "./src/app/**/*.{ts,tsx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        primary: "#3b82f6",
+      },
+    },
+  },
+  plugins: [require("tailwindcss-animate")],
+};
 
-// Sidebar Component
-const Sidebar: FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
-  const menuItems = [
-    { icon: <LayoutDashboard size={20} />, label: 'Dashboard', active: true },
-    { icon: <Users size={20} />, label: '患者信息', active: false },
-    { icon: <Pill size={20} />, label: '用药管理', active: false },
-  ]
+export default config;
+```
 
-  return (
-    <>
-      {/* Mobile overlay */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
-          onClick={onClose}
-        />
-      )}
-      
-      {/* Sidebar */}
-      <aside className={`
-        fixed left-0 top-0 z-50 h-screen w-64 transform bg-primary-900 transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:z-0
-        ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-      `}>
-        <div className="flex h-16 items-center justify-between px-6">
-          <h1 className="text-xl font-bold text-white">慢病管理平台</h1>
-          <button 
-            onClick={onClose}
-            className="text-white lg:hidden"
-          >
-            <X size={20} />
-          </button>
-        </div>
-        
-        <nav className="mt-8 px-4">
-          {menuItems.map((item, index) => (
-            <a
-              key={index}
-              href="#"
-              className={`
-                mb-2 flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors
-                ${item.active 
-                  ? 'bg-primary-800 text-white' 
-                  : 'text-primary-100 hover:bg-primary-800 hover:text-white'
-                }
-              `}
-            >
-              {item.icon}
-              {item.label}
-            </a>
-          ))}
-        </nav>
-      </aside>
-    </>
-  )
+```css
+/* src/app/globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+### Step 4: Configure shadcn/ui
+
+After running `npx shadcn@latest init`, the CLI will:
+1. Ask for **base color** (choose: `slate` / `gray` / `zinc` — `zinc` is most popular)
+2. Create `src/components/ui/` folder with base components
+3. Add CSS variables to `globals.css`
+
+**Example `components.json`** (auto-generated):
+```json
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "tailwind.config.ts",
+    "css": "src/app/globals.css",
+    "baseColor": "zinc",
+    "cssVariables": true
+  },
+  "aliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils"
+  }
 }
+```
 
-// Main App Component
-const App: FC = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+### Step 5: Create Dashboard Page (Example)
 
+**src/app/page.tsx**:
+```tsx
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+
+export default function DashboardPage() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      
-      <div className="lg:pl-64">
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b bg-white px-6 shadow-sm">
-          <button 
-            onClick={() => setSidebarOpen(true)}
-            className="text-gray-600 lg:hidden"
-          >
-            <Menu size={24} />
-          </button>
-          
-          <h2 className="text-lg font-semibold text-gray-900">Dashboard</h2>
-          
-          <div className="flex items-center gap-4">
-            <button className="relative rounded-full p-2 text-gray-600 hover:bg-gray-100">
-              <Bell size={20} />
-              <span className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                3
-              </span>
-            </button>
-          </div>
-        </header>
-        
-        <main className="p-6">
-          <h1 className="text-2xl font-bold text-gray-900">Welcome to Tailwind v4 + Radix UI</h1>
-        </main>
-      </div>
+    <div className="flex min-h-screen w-full flex-col">
+      <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
+        <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Total Revenue
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">$45,231.89</div>
+              <p className="text-xs text-muted-foreground">
+                +20.1% from last month
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
     </div>
   )
 }
+```
 
-export default App
+**src/app/layout.tsx**:
+```tsx
+import type { Metadata } from "next"
+import { Inter } from "next/font/google"
+import "./globals.css"
+
+const inter = Inter({ subsets: ["latin"] })
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+  description: "Generated by Next.js + shadcn/ui",
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en">
+      <body className={inter.className}>{children}</body>
+    </html>
+  )
+}
 ```
 
 ### Step 6: Deliver
@@ -337,11 +348,17 @@ After generating the project:
    ```bash
    cd <project-name>
    npm install
-   npm run dev
+   npm run dev        # http://localhost:3000
    ```
-3. **Tell user how to build for production**:
+3. **Tell user how to add more shadcn components**:
    ```bash
-   npm run build  # Output: dist/ folder
+   npx shadcn@latest add <component-name>
+   # e.g., npx shadcn@latest add dialog table form
+   ```
+4. **Tell user how to build for production**:
+   ```bash
+   npm run build       # Output: .next/ folder
+   npm start           # Start production server
    ```
 
 ---
@@ -424,7 +441,7 @@ const App: FC<AppProps> = ({ title }) => { ... }
 
 ## Important Notes
 
-### For 国内架构 (Ant Design):
+### For 国内架构 (Ant Design + Vite):
 - **NO CDN approach** - Ant Design requires build tools (Vite/webpack)
 - **Use TypeScript** - Type safety, better DX, industry standard
 - **Use Vite** - Best DX (HMR, fast builds, TypeScript support out of the box)
@@ -432,23 +449,47 @@ const App: FC<AppProps> = ({ title }) => { ... }
 - **Build output** - `npm run build` generates `dist/` folder (can be deployed to any static server)
 - **Hot Module Replacement (HMR)** - Vite provides instant updates during development
 
-### For 国际架构 (Tailwind + Radix UI):
+### For 国际架构 (Next.js + shadcn/ui):
+- **Next.js 15 App Router** - File-system routing, React Server Components
 - **Use Tailwind CSS v4** - Latest version with CSS-based configuration
-- **Install @tailwindcss/vite plugin** - Required for Vite integration
-- **NO tailwind.config.js** - All configuration in CSS via `@theme` directive
-- **NO postcss.config.js** - Not needed in v4
-- **Use Radix UI for components** - Headless, accessible, customizable
-- **Use lucide-react for icons** - Modern, tree-shakeable icon library
+- **shadcn/ui is NOT a npm package** - Components are copied into your project
+- **Owns the code** - You can modify any shadcn/ui component freely
+- **Use `npx shadcn@latest add <component>` to add more components**
+- **Fonts** - Use `next/font/google` (built-in, no extra requests)
+- **Build output** - `npm run build` generates `.next/` folder
 
 ---
 
-## Tailwind CSS v4 Key Differences
+## shadcn/ui Component Reference
+
+### Most Used Components
+
+| Component | Command | Usage |
+|-----------|----------|-------|
+| Button | `npx shadcn@latest add button` | `<Button variant="outline">` |
+| Card | `npx shadcn@latest add card` | `<Card><CardHeader>...` |
+| Input | `npx shadcn@latest add input` | `<Input placeholder="..." />` |
+| Label | `npx shadcn@latest add label` | `<Label htmlFor="...">` |
+| Select | `npx shadcn@latest add select` | `<Select><SelectTrigger>...` |
+| Dialog | `npx shadcn@latest add dialog` | `<Dialog><DialogTrigger>...` |
+| Dropdown Menu | `npx shadcn@latest add dropdown-menu` | `<DropdownMenu>...` |
+| Table | `npx shadcn@latest add table` | `<Table><TableHeader>...` |
+| Tabs | `npx shadcn@latest add tabs` | `<Tabs><TabsList>...` |
+| Badge | `npx shadcn@latest add badge` | `<Badge variant="secondary">` |
+| Avatar | `npx shadcn@latest add avatar` | `<Avatar><AvatarImage>...` |
+| Form | `npx shadcn@latest add form` | Uses React Hook Form |
+
+### Full component list: https://ui.shadcn.com/docs/components
+
+---
+
+## Tailwind CSS v4 vs v3 Key Differences
 
 ### Configuration
 
 **v3 (Old)**:
 ```js
-// tailwind.config.js
+// tailwind.config.ts
 module.exports = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
   theme: {
@@ -463,7 +504,7 @@ module.exports = {
 
 **v4 (New)**:
 ```css
-/* src/index.css */
+/* src/app/globals.css */
 @import "tailwindcss";
 
 @theme {
@@ -471,32 +512,28 @@ module.exports = {
 }
 ```
 
-### Vite Config
+### Vite Config (for reference)
 
-**v3**: Uses PostCSS
+**v3**: Uses PostCSS (`postcss.config.js`)
+**v4**: Uses Vite plugin (`@tailwindcss/vite`)
 
-**v4**: Uses Vite plugin
-```typescript
-import tailwindcss from '@tailwindcss/vite'
-
-export default defineConfig({
-  plugins: [react(), tailwindcss()],
-})
-```
+> **Note**: Next.js with Tailwind v4 auto-configures via PostCSS, no manual plugin setup needed.
 
 ---
 
 ## References
 
 - `references/antd-components.md` - Ant Design component API reference
-- `references/tailwind-radix-guide.md` - Tailwind CSS v4 + Radix UI setup guide (国际架构)
-- `references/vite-setup.md` - Vite configuration guide
+- `references/next-shadcn-guide.md` - Next.js 15 + shadcn/ui setup guide (国际架构)
+- `references/tailwind-radix-guide.md` - Tailwind CSS v4 + Radix UI setup guide (legacy)
 
 ---
 
 ## Example: Complete Project Generation
 
-When user says "用 Ant Design 做一个登录页面":
+### Example 1: 国内架构
+
+When user says **"用 Ant Design 做一个登录页面"**:
 
 1. Create Vite project structure with TypeScript
 2. Generate `index.html`, `src/main.tsx`, `src/App.tsx`, `package.json`, `tsconfig.json`
@@ -509,16 +546,18 @@ When user says "用 Ant Design 做一个登录页面":
    npm run dev
    ```
 
-When user says "用国际架构做一个登录页面" or "用 Tailwind 做一个...":
+### Example 2: 国际架构
 
-1. Create Vite project structure with TypeScript
-2. Install Tailwind CSS v4 + Radix UI
-3. Configure vite.config.ts with @tailwindcss/vite plugin
-4. Generate `src/index.css` with @import "tailwindcss" and @theme
-5. Create components using Tailwind utility classes + Radix UI primitives
+When user says **"用国际架构做一个登录页面"** or **"用 Next.js + shadcn 做一个..."**:
+
+1. Create Next.js project (App Router + TypeScript + Tailwind)
+2. Initialize shadcn/ui (`npx shadcn@latest init`)
+3. Add shadcn components: `button`, `input`, `label`, `card`
+4. Generate `src/app/layout.tsx`, `src/app/page.tsx`, `src/app/globals.css`
+5. Use `next/font/google` for fonts
 6. Provide instructions to run:
    ```bash
    cd login-page
    npm install
-   npm run dev
+   npm run dev        # http://localhost:3000
    ```
